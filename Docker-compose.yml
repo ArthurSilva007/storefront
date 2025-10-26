@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  warehouse:
+    build: .
+    container_name: warehouse-app
+    environment:
+      SPRING_PROFILE_ACTIVE: = dev
+    ports:
+      - "8081:8081"
+      - "5006:5005"
+    depends_on:
+      - rabbitmq
+      - warehouseapp
+    networks:
+      - dio-network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    networks:
+      - dio-network
+
+  warehouseapp:
+    image: nginx:alpine
+    container_name: warehouseapp
+    ports:
+      - "8080:80"
+    networks:
+      - dio-network
+
+networks:
+  dio-network:
+    driver: bridge
